@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
 
 app = Flask(__name__)
@@ -11,12 +11,12 @@ db_config = {
     'database': 'pf0807'
 }
 
-# Rota para a página inicial
+# Página inicial
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Rota para a página de busca de produtos
+# Página de busca
 @app.route('/buscar', methods=['GET', 'POST'])
 def buscar():
     if request.method == 'POST':
@@ -30,14 +30,31 @@ def buscar():
     else:
         return render_template('buscar.html', produtos=[])
 
-# Rota para a página de atualização de produtos
+# Página para adicionar produto
+@app.route('/adicionar', methods=['GET', 'POST'])
+def adicionar():
+    if request.method == 'POST':
+        nome = request.form['nome']
+        valor = request.form['valor']
+
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO produto (nome, valor) VALUES (%s, %s)", (nome, valor))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('index'))
+
+    return render_template('adicionar.html')
+
+# Página para atualizar produto
 @app.route('/atualizar/<int:id>', methods=['GET', 'POST'])
 def atualizar(id):
     if request.method == 'POST':
         data = request.form
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("UPDATE produto SET nome = %s, valor = %s WHERE codigo = %s", (data['nome'], data['valor'], id))
+        cursor.execute("UPDATE produto SET nome = %s, valor = %s WHERE codigo = %s",
+                       (data['nome'], data['valor'], id))
         conn.commit()
         conn.close()
         return redirect(url_for('buscar'))
