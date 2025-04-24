@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Página de Busca de Produtos</title>
+</head>
+<body>
+    <h1>Buscar Produtos</h1>
+    <form method="post">
+        <input type="text" name="termo_busca" placeholder="Digite o termo de busca">
+        <button type="submit">Buscar</button>
+    </form>
+    <h2>Resultados da busca:</h2>
+    <ul>
+        {% for codigo, nome, valor in produtos %}
+        <li>{{ codigo }} - {{ nome }} - R$ {{ valor }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
